@@ -21,7 +21,7 @@ fetch("http://localhost:3000/films")
     movieDes.innerText = firstMovie.description
     runTm.innerText =`Runtime: ${firstMovie.runtime} minutes`
     showTm.innerText =`Showtime: ${firstMovie.showtime}`
-    availableTckt.innerText =`Tickets Available: (${firstMovie.capacity - firstMovie.tickets_sold})`
+    availableTckt.innerText =`${firstMovie.capacity - firstMovie.tickets_sold}` 
 
     const ticketBuy = document.getElementById(`buyTicket${data.id}`)
     let tickets = Number(firstMovie.capacity - firstMovie.tickets_sold)
@@ -47,6 +47,8 @@ fetch("http://localhost:3000/films")
             },
             body: JSON.stringify(data)
         })
+        .then(res => res.json())
+        .then(film => console.log(film))
     })
 
 })
@@ -71,15 +73,11 @@ const movieItem = () => {
             movieItem.setAttribute('id',`${movie.id}`)
 
             movieItem.innerText = movie.title
-            console.log(movie.title)
+            // console.log(movie.title)
 
             list.appendChild(movieItem)
 
-            const deleteBtn = document.createElement("button")
-            deleteBtn.classList.add("btn", "btn-danger")
-            deleteBtn.setAttribute('id',`${movie.id}-delete`)
-            deleteBtn.innerText = "Delete"
-            movieItem.appendChild(deleteBtn)
+            
 
             movieItem.addEventListener('click',()=>{
                 const filmImage = document.getElementById("poster")
@@ -120,6 +118,26 @@ const movieItem = () => {
 
 
 
+            })
+
+            const deleteBtn = document.createElement("button")
+            deleteBtn.classList.add("btn", "btn-danger")
+            deleteBtn.setAttribute('id',`${movie.id}-delete`)
+            deleteBtn.innerText = "Delete"
+            movieItem.appendChild(deleteBtn)
+
+            deleteBtn.addEventListener('click',()=>{
+                movieItem.remove();
+
+
+                fetch(`http://localhost:3000/films/${movie.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => res.json())
+                .then(movie => console.log(movie))
             })
         }
          
